@@ -5,6 +5,7 @@ A file structure, color code, and set of utility functions to make producing las
 Everything goes in a directory called oolc_production
 * oolc_production
   * working.yaml
+    * project_id
     * project_name
     * project_repo
     * production_format

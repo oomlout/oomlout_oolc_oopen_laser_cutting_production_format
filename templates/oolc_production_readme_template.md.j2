@@ -1,58 +1,14 @@
-# {{ p.name }}
+# {{ p.project_name }}
 {{ p.description }}
 {{ p.readme_manual }}
-{{ p.description }}  
-{% if "kicad/current_version/working/bom/ibom.html" in p.files %}* ibom github: [ibom github](kicad/current_version/working/bom/ibom.html)
-* ibom direct: [ibom direct](https://raw.githack.com/oomlout/{{p.id}}/main/kicad/current_version/working/bom/ibom.html){% endif %}
-{% if "working.jpg" in p.files %}[![](working_600.jpg)](working.jpg)
-{% for i in range(1, 11) %}{% if "working_" ~ i ~ ".jpg" in p.files %}[![](working_{{ i }}_300.jpg)](working_{{ i }}.jpg){% endif %}
+## formats
+{% for format in p.production_format %}
+### {{ format }}
+* link: [/{{ format}}]({{ format }})  
+![]({{ format }}/working_300.png)  
+* width: {{ p.production_format[format].width }}  
+* height: {{ p.production_format[format].height }}  
+* thickness: {{ p.production_format[format].thickness }}  
+* material: {{ p.production_format[format].material }}  
+ 
 {% endfor %}
-{% endif %}
-{% if "kicad/current_version/working/working_schematic.png" in p.files %}## schematic  
-[![](kicad/current_version/working/working_schematic_600.png)](kicad/current_version/working/working_schematic.png)  
-[schematic (pdf)](kicad/current_version/working/working_schematic.pdf)  
-{% endif %}
-{% if "kicad/current_version/working/working_3d.png" in p.files %}## pcb  
-[![](kicad/current_version/working/working_3d_600.png)](kicad/current_version/working/working_3d.png)  
-[![](kicad/current_version/working/working_3d_front_600.png)](kicad/current_version/working/working_3d_front.png)    
-[![](kicad/current_version/working/working_3d_back_600.png)](kicad/current_version/working/working_3d_back.png)  
-[![](kicad/current_version/working/working_600.png)](kicad/current_version/working/working.png)  
-[board (pdf)](kicad/current_version/working/working.pdf)  
-{% endif %}
-{% if "working.png" in p.files %}## corel working
-![](working_600.png) 
-{% endif %}
-{% if "module" in p %}## module
-{% for mod in p.module %}* [{{ mod.id }}]({{ mod.link }}) 
-{% endfor %}
-{% endif %}
-{#}
-{% if "kicad/current_version/working/working_bom.csv" in p.files %}## working_bom
-{{ p.bom_table }}
-{% if "kicad/current_version/working/working_bom.csv" in p.files %}## working_bom
-{{ p.bom_table }}
-note: the bom as exported by kicad pcb
-{% endif %}
-{% if "kicad/current_version/working/working_bom_schematic.csv" in p.files %}## working_bom_schematic
-{{ p.bom_schematic_table }}
-the bom as exported by kicad schematic
-{% endif %}
-{% if "working_parts.csv" in p.files %}## working_parts
-{{ p.parts_table }}
-note: a manually generated file for taking notes and positioning components
-{% endif %}
-#}
-{% if "oomp_parts_table" in p %}## oomp_parts_summary
-{{ p.oomp_parts_table }}
-Search Links: (L) - lcsc, (D) - digikey, (M) - mouser, (N) - newark, (SZ) - szlcsc
-note: a work on progress that takes the bom file from kicad pcb and try's to add oomp details
-{% endif %}
-{% if "mounting_holes" in p %}## mounting_holes
-{{ p.mounting_holes_markdown }}
-{% endif %}
-{% if "position_top" in p %}## positions
-### top
-{{ p.position_top_markdown }}
-### bottom
-{{ p.position_bottom_markdown }}
-{% endif %}

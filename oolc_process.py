@@ -7,6 +7,7 @@ import oom_corel
 import oom_git
 import oom_base
 import oom_markdown
+import sys
 
 def main(**kwargs):
     base_directory = kwargs.get('directory', os.getcwd())
@@ -81,6 +82,7 @@ def process_format(**kwargs):
     file_input = format_details["file_location"]
     file_input_type = file_input.split(".")[-1]    
     format = kwargs["format"]
+    overwrite = kwargs.get("overwrite", True)
 
     directory_output = f"{directory}/{format}"
 
@@ -93,7 +95,20 @@ def process_format(**kwargs):
     shutil.copyfile(file_src, file_dst)
 
     filename = file_dst
-    oom_corel.generate_outputs(filename=filename, overwrite=True)
+    #if filename is a dxf
+    if filename.endswith(".dxf"):
+        oom_corel.dxf_to_cdr(filename=filename)
+        filename = filename.replace(".dxf", ".cdr")
+    elif filename.endswith(".svg"):
+        print(f"converting to cdr currently skipped")
+        filename_test = filename.replace(".svg", ".cdr")
+        if not os.path.exists(filename_test):
+            oom_corel.svg_to_cdr(filename=filename)        
+        filename = filename.replace(".svg", ".cdr")
+    #if filename ends in cdr
+    if filename.endswith(".cdr"):
+        oom_corel.generate_outputs(filename=filename, overwrite=overwrite)
+        oom_base.image_resolutions_dir(directory=directory_output, overwrite=overwrite)
     
 
 
@@ -106,6 +121,12 @@ def process_format(**kwargs):
 
 if __name__ == "__main__":
     kwargs = {}
+    #see if -overwrite is in the arguments
+    overwrite = False
+    if "-overwrite" in sys.argv:
+        overwrite = True
+    kwargs["overwrite"] = overwrite
     #directory = "C:/GH/oomlout_oolc_oopen_laser_cutting_production_format/tmp/data/glassgarden_oolc_decorative_item_christmas_bauble"
+    
     #kwargs["directory"] = directory
     main(**kwargs)

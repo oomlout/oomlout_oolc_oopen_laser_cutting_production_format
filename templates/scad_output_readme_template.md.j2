@@ -1,0 +1,10 @@
+# {{ p.project_name }}
+{{ p.description }}
+{{ p.readme_manual }}
+## parts
+{% for part in p.parts %}
+### {{ part }}
+* link: [/{{ part}}]({{ part }})  
+![]({{ part }}/3dpr_300.png)  
+ 
+{% endfor %}

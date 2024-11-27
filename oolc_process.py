@@ -14,22 +14,28 @@ def main(**kwargs):
     kwargs["base_directory"] = base_directory
     #find recursively all directories named oolc_production
     directories = glob.glob(f"{base_directory}/**/oolc_production", recursive=True)
-    kwargs["directories"] = directories
-    process_directories(**kwargs)
+    kwargs["oolc_directories"] = directories
+    process_oolc_directories(**kwargs)
+    #find recursively all directories named scad_production
+    directories = glob.glob(f"{base_directory}/**/scad_output", recursive=True)
+    kwargs["scad_directories"] = directories
+    process_scad_directories(**kwargs)
+    
+    
     kwargs["comment"] = "comitting after processing for oolc"
-    oom_base.image_resolutions_dir(directory=base_directory, overwrite=True)
-    oom_git.push_to_git(**kwargs)
+    #oom_base.image_resolutions_dir(directory=base_directory, overwrite=True)
+    #oom_git.push_to_git(**kwargs)
 
     
 
-def process_directories(**kwargs):
-    for directory in kwargs["directories"]:
+def process_oolc_directories(**kwargs):
+    for directory in kwargs["oolc_directories"]:
         p3 = copy.deepcopy(kwargs)
-        p3["directory"] = directory
-        process_directory(**p3)
+        p3["oolc_directory"] = directory
+        process_oolc_directory(**p3)
 
-def process_directory(**kwargs):
-    directory = kwargs["directory"]
+def process_oolc_directory(**kwargs):
+    directory = kwargs["oolc_directory"]
     #load directory/working.yaml
     deets = {}
     with open(f"{directory}/working.yaml", 'r') as stream:
@@ -64,7 +70,7 @@ def process_directory(**kwargs):
             p3 = copy.deepcopy(kwargs)
             p3["format"] = format
             p3["format_details"] = production_formats[format]
-            process_format(**p3)
+            #process_format(**p3)
   
     print(f"making readme")
     p3 = copy.deepcopy(kwargs)    
@@ -72,11 +78,82 @@ def process_directory(**kwargs):
     template_file = f"{dir_template}/oolc_production_readme_template.md.j2"
     p3["template_file"] = template_file
     p3["dict_data"] = kwargs
+    cwd = os.getcwd()
+    directory = f"{cwd}/oolc_production"
+    p3["directory"] = directory
+    oom_markdown.generate_readme_generic(**p3)
+
+def process_scad_directories(**kwargs):
+    for directory in kwargs["scad_directories"]:
+        p3 = copy.deepcopy(kwargs)
+        p3["scad_directory"] = directory
+        process_scad_directory(**p3)
+
+def process_scad_directory(**kwargs):
+    directory = kwargs["scad_directory"]
+    directory_base = directory
+    #load directory/working.yaml
+    deets = {}
+    #get a list of directories
+    directories = glob.glob(f"{directory}/*")
+    
+    #create a working.yaml like the oolc typed one
+    working_deets = {}
+    cwd = os.getcwd()
+    cwd = cwd.replace("\\", "/")
+    project_id = cwd.split("/")[-1]
+    working_deets["project_id"] = project_id
+    working_deets["project_name"] = project_id.replace("_", " ").capitalize()
+    project_repo = f"https://github.com/oomlout/{project_id}"
+    working_deets["project_repo"] = project_repo
+    
+
+    
+    scad_parts = {}
+    scad_parts["parts"] = {}
+    for directory in directories:
+        working_file_name = f"{directory}/working.yaml"
+        if os.path.exists(working_file_name):
+            with open(working_file_name, 'r') as stream:
+                try:
+                    deets = yaml.load(stream, Loader=yaml.FullLoader)
+                    directory = directory.replace("\\", "/")
+                    top_directory = directory.split("/")[-1]
+                    scad_parts["parts"][top_directory] = deets
+                except yaml.YAMLError as exc:
+                    print(exc)
+    working_deets.update(scad_parts)            
+    #save as working.yaml
+    with open(f"{directory_base}/working.yaml", 'w') as file:
+        
+        yaml.dump(working_deets, file)
+    
+    
+    
+    kwargs.update(scad_parts)
+    default_values = []
+    default_values.append(["material", "pla"])
+    for default_value in default_values:
+        if default_value[0] not in kwargs:
+            kwargs[default_value[0]] = default_value[1]
+    
+
+
+
+    print(f"making readme")
+    p3 = copy.deepcopy(kwargs)    
+    dir_template = "C:/GH/oomlout_oolc_oopen_laser_cutting_production_format/templates"
+    template_file = f"{dir_template}/scad_output_readme_template.md.j2"
+    p3["template_file"] = template_file
+    p3["dict_data"] = kwargs
+    cwd = os.getcwd()
+    directory = f"{cwd}/scad_output"
+    p3["directory"] = directory
     oom_markdown.generate_readme_generic(**p3)
 
 
 def process_format(**kwargs):
-    directory = kwargs["directory"]
+    directory = kwargs["oolc_directory"]
     base_directory = kwargs["base_directory"]
     format_details = kwargs["format_details"]
     file_input = format_details["file_location"]

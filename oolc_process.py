@@ -70,7 +70,7 @@ def process_oolc_directory(**kwargs):
             p3 = copy.deepcopy(kwargs)
             p3["format"] = format
             p3["format_details"] = production_formats[format]
-            #process_format(**p3)
+            process_format(**p3)
   
     print(f"making readme")
     p3 = copy.deepcopy(kwargs)    

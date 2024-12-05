@@ -116,16 +116,18 @@ def process_scad_directory(**kwargs):
         if os.path.exists(working_file_name):
             with open(working_file_name, 'r') as stream:
                 try:
+                    print(f"loading {working_file_name}")
                     deets = yaml.load(stream, Loader=yaml.FullLoader)
                     directory = directory.replace("\\", "/")
                     top_directory = directory.split("/")[-1]
                     scad_parts["parts"][top_directory] = deets
                 except yaml.YAMLError as exc:
+                    print("error loading yaml")
                     print(exc)
-    working_deets.update(scad_parts)            
+    working_deets.update(scad_parts)     
+           
     #save as working.yaml
-    with open(f"{directory_base}/working.yaml", 'w') as file:
-        
+    with open(f"{directory_base}/working.yaml", 'w') as file:        
         yaml.dump(working_deets, file)
     
     
@@ -207,6 +209,6 @@ if __name__ == "__main__":
         overwrite = True
     kwargs["overwrite"] = overwrite
     #directory = "C:/GH/oomlout_oolc_oopen_laser_cutting_production_format/tmp/data/glassgarden_oolc_decorative_item_christmas_bauble"
-    directory = "C:\\GH\\oomlout_oobb_holder_stationery_clip_binder"
-    kwargs["directory"] = directory
+    #directory = "C:\\GH\\oomlout_oobb_holder_stationery_clip_binder"
+    #kwargs["directory"] = directory
     main(**kwargs)

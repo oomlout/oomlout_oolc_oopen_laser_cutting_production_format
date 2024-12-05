@@ -169,7 +169,10 @@ def process_format(**kwargs):
     file_src = f"{base_directory}/{file_input}"
     file_dst = f"{directory_output}/working.{file_input_type}"
     # copy file
-    shutil.copyfile(file_src, file_dst)
+    try:
+        shutil.copyfile(file_src, file_dst)
+    except shutil.SameFileError:
+        print(f"same file error")
 
     filename = file_dst
     #if filename is a dxf
@@ -204,6 +207,6 @@ if __name__ == "__main__":
         overwrite = True
     kwargs["overwrite"] = overwrite
     #directory = "C:/GH/oomlout_oolc_oopen_laser_cutting_production_format/tmp/data/glassgarden_oolc_decorative_item_christmas_bauble"
-    
-    #kwargs["directory"] = directory
+    directory = "C:\\GH\\oomlout_oobb_holder_stationery_clip_binder"
+    kwargs["directory"] = directory
     main(**kwargs)

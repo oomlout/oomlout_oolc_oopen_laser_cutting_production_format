@@ -178,19 +178,21 @@ def process_format(**kwargs):
 
     filename = file_dst
     #if filename is a dxf
-    if filename.endswith(".dxf"):
-        oom_corel.dxf_to_cdr(filename=filename)
-        filename = filename.replace(".dxf", ".cdr")
-    elif filename.endswith(".svg"):
-        print(f"converting to cdr currently skipped")
-        filename_test = filename.replace(".svg", ".cdr")
-        if not os.path.exists(filename_test):
-            oom_corel.svg_to_cdr(filename=filename)        
-        filename = filename.replace(".svg", ".cdr")
-    #if filename ends in cdr
-    if filename.endswith(".cdr"):
-        oom_corel.generate_outputs(filename=filename, overwrite=overwrite)
-        oom_base.image_resolutions_dir(directory=directory_output, overwrite=overwrite)
+    no_click = kwargs.get("no_click", False)
+    if not no_click:
+        if filename.endswith(".dxf"):
+            oom_corel.dxf_to_cdr(filename=filename)
+            filename = filename.replace(".dxf", ".cdr")
+        elif filename.endswith(".svg"):
+            print(f"converting to cdr currently skipped")
+            filename_test = filename.replace(".svg", ".cdr")
+            if not os.path.exists(filename_test):
+                oom_corel.svg_to_cdr(filename=filename)        
+            filename = filename.replace(".svg", ".cdr")
+        #if filename ends in cdr
+        if filename.endswith(".cdr"):
+            oom_corel.generate_outputs(filename=filename, overwrite=overwrite)
+    oom_base.image_resolutions_dir(directory=directory_output, overwrite=overwrite)
     
 
 
